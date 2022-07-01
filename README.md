@@ -65,14 +65,14 @@ The resulting probability was sometimes greater than 1, sometimes much less. It 
 
 It can be assumed that this probability correlates with the purity of the sound.
 
-#I checked each of the recognized sounds by ear. Patterns:
+# I checked each of the recognized sounds by ear. Patterns:
 the autoencoder more often supports the female voice. The test sample was chosen at random; perhaps it has more female voices.
 
 in general, the autoencoder reflects the "purity" of pronunciation. Those that recognized the classifier but did not recognize the autoencoder were often more deaf.
 
 The sounds that are fed to the autoencoder are clipped in the classification. Perhaps you should change n_fft and set a larger plus or minus of 500-1000 units.
 
-#Experiment on preprocessing min-max scaler and standard scaler. Patterns:
+# Experiment on preprocessing min-max scaler and standard scaler. Patterns:
 MinMaxScaler gives more precision. Sound boundaries are wider. Fewer sounds are recognized in one track. Accuracy is improved by filtering out false positives. You can trust the average more. The Autoencoder has more support for the classifier - more values ​​other than 0 compared to the StandardScaler.
 
 An experiment on preprocessing a training set on a prepared autoencoder.
@@ -80,7 +80,7 @@ In theory, "extra" sounds should be extinguished. In practice, sounds were recog
 
 Models were trained mainly on one-two-three-syllable words. Long sentences increase the margin of error.
 
-##Conclusions on Improving Accuracy
+# Conclusions on Improving Accuracy
 For reference samples of sounds, you can set additional statistical indicators, such as the average length of the sound, standard deviation. New sounds can be compared with these indicators, and if the neural network recognized a sound with a length of 100, and the average length of a sound is 10 and the standard deviation is 3, then the recognized sound can be rejected with a high probability.
 
 In most cases, the sounds [a], [i] gave a pitch comparable to the diphthong [ai]. Conclusion: to improve accuracy, train on individual vowels.
