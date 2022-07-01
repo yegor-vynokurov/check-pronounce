@@ -29,7 +29,7 @@ For further research, we settled on mfcc
 
 The diphthong [ai] gave an error during recognition: the classifier recognized both the sound [ai] and some sounds [a], [i].
 
-## Classifier evaluation data:
+# Classifier evaluation data:
 true recognized sounds: 192
 
 sounds recognized as true but not true: 159
@@ -56,7 +56,7 @@ The classifier showed rise and fall in probability with a peak corresponding to 
 
 In further work, use yTrain, yTest, which indicates lower sound probabilities. For example, where the sound [b] has not yet ended, and the sound [a] has just begun, put not 1 or 0, but a percentage: 0.7, 0.8, 0.9, 1.0, 1.0, 1.0, 0.9, 0.8. This can improve the accuracy of predictions.
 
-## Autoencoder recognition data:
+# Autoencoder recognition data:
 The predicted sounds [ai] when processed by the autoencoder did not make it possible to use bias to filter out "clean" and "not clean" sounds. The error boundaries overlapped completely, the mean values almost coincided.
 
 Therefore, we used a trained classifier and ran the predicted sounds through it. We got the probability that each of the sounds belongs to [ai].
@@ -65,14 +65,14 @@ The resulting probability was sometimes greater than 1, sometimes much less. It 
 
 It can be assumed that this probability correlates with the purity of the sound.
 
-##He checked each of the recognized sounds by ear. Patterns:
+#I checked each of the recognized sounds by ear. Patterns:
 the autoencoder more often supports the female voice. The test sample was chosen at random; perhaps it has more female voices.
 
 in general, the autoencoder reflects the "purity" of pronunciation. Those that recognized the classifier but did not recognize the autoencoder were often more deaf.
 
 The sounds that are fed to the autoencoder are clipped in the classification. Perhaps you should change n_fft and set a larger plus or minus of 500-1000 units.
 
-##Experiment on preprocessing min-max scaler and standard scaler. Patterns:
+#Experiment on preprocessing min-max scaler and standard scaler. Patterns:
 MinMaxScaler gives more precision. Sound boundaries are wider. Fewer sounds are recognized in one track. Accuracy is improved by filtering out false positives. You can trust the average more. The Autoencoder has more support for the classifier - more values ​​other than 0 compared to the StandardScaler.
 
 An experiment on preprocessing a training set on a prepared autoencoder.
