@@ -20,21 +20,69 @@ yTrain, yTest were collected in a semi-automatic mode: an audio recording was li
 
 The words are collected from the site https://ru.forvo.com, where native speakers voice the words. Words were selected only with a positive index for those who voiced.
 
-# Точность произношения звуков английского языка. 
+# Results and Conclusions
 
-**Цель**: создать нейронную сеть, которая распознаёт звуки английского языка и оценивает качество их произношения. 
+Results and conclusions
+The best result from single audio parameters was shown by mfcc. Separate chroma_stft, chromagram, etc. showed no results. Concatenate "small" features like chroma_stft gives a result comparable to the spectrum of stft.
 
-**Замысел**: использовать дифтонг [ai] и получить наиболее возможные значимые отличия. 
+For further research, we settled on mfcc
 
-**Метод**: комбинация классификатора и автоэнкодера. 
+The diphthong [ai] gave an error during recognition: the classifier recognized both the sound [ai] and some sounds [a], [i].
 
-Для классификатора использована тренировочная выборка из 120 слов с дифтонгами [ai]: https://drive.google.com/drive/folders/11_MFr0WoAqVkHqhYQuWFCEb9lL5ZA8pu?usp=sharing
+## Classifier evaluation data:
+true recognized sounds: 119
 
-Точность классификации оценивалась на тестовой выборке в 30 слов: https://drive.google.com/drive/folders/1VNxNB1f-TLgYfF1wEKiX5x-2pE861Sqq?usp=sharing
+sounds recognized as true but not true: 115
 
-Для тренировки автоэнкодера использовались выделенные звуки [ai] из тренировочной выборки. 
+recognized as false, but they are true: 137
 
-yTrain, yTest  собирались в полуавтоматическом режиме: прослушивалась аудиозапись, отмечались места, где присутствует требуемый звук, метки вносились в список. Программа в соответствии с метками создавала правильные ответы и нарезала звуки для автоэнкодера. 
+recognized as false - and they are false: 1676
 
-Слова собраны с сайта https://ru.forvo.com, где носители языка озвучивают слова. Отбирались слова только с положительным индексом для тех, кто озвучивал.
-"""
+Word Recognition Rate: 87.69%
+
+Word Error Rate: 12.31%
+
+Accuracy: 0.51
+
+Fullness: 0.46
+
+Harmonic mean: 0.49
+
+Conclusion: there is no point in classifying diphthongs, it is better to take individual sounds.
+
+Used yTest, yTrain of 0 and 1 where there was no target sound and there was a target sound.
+
+The classifier showed rise and fall in probability with a peak corresponding to 1 in yTrain, yTest.
+
+In further work, use yTrain, yTest, which indicates lower sound probabilities. For example, where the sound [b] has not yet ended, and the sound [a] has just begun, put not 1 or 0, but a percentage: 0.7, 0.8, 0.9, 1.0, 1.0, 1.0, 0.9, 0.8. This can improve the accuracy of predictions.
+
+## Autoencoder recognition data:
+The predicted sounds [ai] when processed by the autoencoder did not make it possible to use bias to filter out "clean" and "not clean" sounds. The error boundaries overlapped completely, the mean values ​​almost coincided.
+
+Therefore, we used a trained classifier and ran the predicted sounds through it. We got the probability that each of the sounds belongs to [ai].
+
+The resulting probability was sometimes greater than 1, sometimes much less. It may be worth adding some kind of normalization or an additional softmax layer.
+
+It can be assumed that this probability correlates with the purity of the sound.
+
+##He checked each of the recognized sounds by ear. Patterns:
+the autoencoder more often supports the female voice. The test sample was chosen at random; perhaps it has more female voices.
+
+in general, the autoencoder reflects the "purity" of pronunciation. Those that recognized the classifier but did not recognize the autoencoder were often more deaf.
+
+The sounds that are fed to the autoencoder are clipped in the classification. Perhaps you should change n_fft and set a larger plus or minus of 500-1000 units.
+
+##Experiment on preprocessing min-max scaler and standard scaler. Patterns:
+MinMaxScaler gives more precision. Sound boundaries are wider. Fewer sounds are recognized in one track. Accuracy is improved by filtering out false positives. You can trust the average more. The Autoencoder has more support for the classifier - more values ​​other than 0 compared to the StandardScaler.
+
+An experiment on preprocessing a training set on a prepared autoencoder.
+In theory, "extra" sounds should be extinguished. In practice, sounds were recognized a little "dirtier" - neighboring ones were captured. But, unlike others, he gave the best prediction for 2 target sounds in a word.
+
+Models were trained mainly on one-two-three-syllable words. Long sentences increase the margin of error.
+
+##Conclusions on Improving Accuracy
+For reference samples of sounds, you can set additional statistical indicators, such as the average length of the sound, standard deviation. New sounds can be compared with these indicators, and if the neural network recognized a sound with a length of 100, and the average length of a sound is 10 and the standard deviation is 3, then the recognized sound can be rejected with a high probability.
+
+In most cases, the sounds [a], [i] gave a pitch comparable to the diphthong [ai]. Conclusion: to improve accuracy, train on individual vowels.
+
+For the final selection of sounds, use the average accuracy between the classifier and the autoencoder.
