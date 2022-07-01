@@ -30,23 +30,23 @@ For further research, we settled on mfcc
 The diphthong [ai] gave an error during recognition: the classifier recognized both the sound [ai] and some sounds [a], [i].
 
 ## Classifier evaluation data:
-true recognized sounds: 119
+true recognized sounds: 192
 
-sounds recognized as true but not true: 115
+sounds recognized as true but not true: 159
 
-recognized as false, but they are true: 137
+recognized as false, but they are true: 64
 
-recognized as false - and they are false: 1676
+recognized as false - and they are false: 1632
 
-Word Recognition Rate: 87.69%
+Word Recognition Rate: 89.11%
 
-Word Error Rate: 12.31%
+Word Error Rate: 10.89%
 
-Accuracy: 0.51
+Accuracy: 0.55
 
-Fullness: 0.46
+Fullness: 0.75
 
-Harmonic mean: 0.49
+Harmonic mean: 0.63
 
 Conclusion: there is no point in classifying diphthongs, it is better to take individual sounds.
 
@@ -57,7 +57,7 @@ The classifier showed rise and fall in probability with a peak corresponding to 
 In further work, use yTrain, yTest, which indicates lower sound probabilities. For example, where the sound [b] has not yet ended, and the sound [a] has just begun, put not 1 or 0, but a percentage: 0.7, 0.8, 0.9, 1.0, 1.0, 1.0, 0.9, 0.8. This can improve the accuracy of predictions.
 
 ## Autoencoder recognition data:
-The predicted sounds [ai] when processed by the autoencoder did not make it possible to use bias to filter out "clean" and "not clean" sounds. The error boundaries overlapped completely, the mean values ​​almost coincided.
+The predicted sounds [ai] when processed by the autoencoder did not make it possible to use bias to filter out "clean" and "not clean" sounds. The error boundaries overlapped completely, the mean values almost coincided.
 
 Therefore, we used a trained classifier and ran the predicted sounds through it. We got the probability that each of the sounds belongs to [ai].
 
